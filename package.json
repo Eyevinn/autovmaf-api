@@ -1,0 +1,21 @@
+{
+  "name": "autoabr-api",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc --project ./",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^17.0.14",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "@eyevinn/autoabr": "^0.1.2",
+    "yaml": "^1.10.2",
+    "fastify": "^3.27.1"
+  }
+}
