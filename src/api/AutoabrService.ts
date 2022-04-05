@@ -1,5 +1,7 @@
 import Fastify from "fastify";
 import AutoABR from '../autoabr';
+import { default_pipeline } from '../resources/pipelines';
+import { default_profile } from '../resources/profiles';
 
 export class AutoabrService {
   private fastify: any;
@@ -19,26 +21,36 @@ export class AutoabrService {
     });
 
     this.fastify.post('/create-job', async (request, reply) => {
-      if (!request.body.jobData) {
-        reply.code(400).send({ error: 'Missing jobData' });
+      if (!request.body.job) {
+        reply.code(400).send({ error: 'Missing job parameter' });
         return;
       }
-      if (!request.body.pipelineData) {
-        reply.code(400).send({ error: 'Missing pipelineData' });
-        return;
+
+      const job = request.body.job;
+      let pipelineS3Url = request.body['pipelineUrl'];
+      let encodingS3Url = request.body['encodingSettingsUrl'];
+      let mediaConvertProfile = default_profile;
+      let pipeline = default_pipeline;
+      try {
+        if (pipelineS3Url) {
+          pipeline = JSON.parse(await this.autoabr.downloadFromS3(pipelineS3Url));
+        }
+        if (encodingS3Url) {
+          mediaConvertProfile = JSON.parse(await this.autoabr.downloadFromS3(encodingS3Url));
+        }
+      } catch (error) {
+        console.error(error);
+        reply
+        .code(500)
+        .header('Content-Type', 'application/json; charset=utf-8')
+        .send({ Message: 'Failed to load settings from S3' });
       }
-      if (!request.body.encodingProfileData) {
-        reply.code(400).send({ error: 'Missing encodingProfileData' });
-        return;
-      }
-      const jobData = request.body.jobData;
-      const pipelineData = request.body.pipelineData;
-      const encodingProfileData = request.body.encodingProfileData;
-      this.autoabr.createJob(jobData, pipelineData, encodingProfileData);
+
+      this.autoabr.createJob(job, pipeline, mediaConvertProfile);
       reply
       .code(200)
       .header('Content-Type', 'application/json; charset=utf-8')
-      .send({ status: 'ok' });
+      .send({ Message: 'Job created successfully! 🎞️' });
     });
   }
 
