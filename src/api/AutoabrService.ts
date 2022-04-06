@@ -37,7 +37,7 @@ export class AutoabrService {
         .send({ status: "Healthy 💖" });
     });
 
-    this.fastify.post('/create-job', async (request, reply) => {
+    this.fastify.post('/autoabr', async (request, reply) => {
       if (!request.body.job) {
         reply.code(400).send({ error: 'Missing job parameter' });
         return;
@@ -74,7 +74,7 @@ export class AutoabrService {
       });
     });
 
-    this.fastify.get('/job/:id', async (request, reply) => {
+    this.fastify.get('/autoabr/:id/status', async (request, reply) => {
       const id = request.params.id;
       const autoabrClient = this.getAutoabrClient(id);
       if (!autoabrClient) {

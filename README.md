@@ -22,6 +22,14 @@ autoabrService.listen(3000);
 
 The Autoabr service is now up and running and available on port `3000`.
 
+Available endpoints are:
+
+`POST` /autoabr
+
+`GET` /autoabr/:id/status
+
+`GET` /healthcheck
+
 ## Current limitations
 
 Currently the autoabr package isn't available on NPM, therefore it's required to link this locally to be able to run the service.
