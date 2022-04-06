@@ -20,6 +20,14 @@ const autoabrService = new AutoabrService();
 autoabrService.listen(3000);
 ```
 
+The following environment variables need to be set:
+
+```bash
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+```
+
 The Autoabr service is now up and running and available on port `3000`.
 
 Available endpoints are:
