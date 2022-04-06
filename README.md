@@ -5,7 +5,8 @@ API to orchestrate autoabr jobs.
 Current features:
 
 - Possible to start initialize new jobs.
-- Monitor how long a job have been running and the status i.e `ACTIVE`/`INACTIVE`.
+- Possible to run multiple autoabr jobs in parallel.
+- Monitor how long a job have been running (milliseconds) and the status i.e `ACTIVE`/`INACTIVE`.
 
 ## Setup
 
@@ -26,6 +27,7 @@ The following environment variables need to be set:
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 AWS_REGION
+SKIP_FILEWRITE=true //to skip writing abr-ladder data to disk
 ```
 
 The Autoabr service is now up and running and available on port `3000`.
@@ -34,10 +36,11 @@ Available endpoints are:
 
 `POST` /autoabr
 
+`GET` /autoabr/status
+
 `GET` /autoabr/:id/status
 
 `GET` /healthcheck
-
 
 To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 
@@ -67,4 +70,4 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 
 ## Current limitations
 
-Currently the [autoabr](https://github.com/Eyevinn/autoabr) package isn't available on NPM, therefore it's required to link this locally to be able to run the service.
+Currently the [autoabr](https://github.com/Eyevinn/autoabr) package isn't available on NPM, therefore it's required to link this locally to be able to run the autoabr-api.
