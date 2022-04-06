@@ -37,7 +37,7 @@ export class AutoABR {
   }
 
   getJobTimer() {
-    if (this.jobStatus !== State.ACTIVE) {
+    if (this.jobStatus === State.ACTIVE) {
       return (new Date()).getTime() - this.startTime.getTime();
     }
     return this.endTime.getTime() - this.startTime.getTime();

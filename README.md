@@ -44,7 +44,7 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 ```json
 {
    "encodingSettingsUrl": "s3://vmaf-files/encoding-profile-h265.json",
-   "pipeline": "s3://vmaf-files/pipeline.json", 
+   "pipeline": "s3://vmaf-files/pipeline.json",
    "job": {
       "name": "output-name",
       "reference": "s3://bucket/reference.mov",
