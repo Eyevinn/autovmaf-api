@@ -38,6 +38,33 @@ Available endpoints are:
 
 `GET` /healthcheck
 
+
+To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
+
+```json
+{
+   "encodingSettingsUrl": "s3://vmaf-files/encoding-profile-h265.json",
+   "pipeline": "s3://vmaf-files/pipeline.json", 
+   "job": {
+      "name": "output-name",
+      "reference": "s3://bucket/reference.mov",
+      "models": [
+         "UHD"
+      ],
+      "bitrates": [
+         12800000
+      ],
+      "resolutions": [
+         {
+            "width": 3840,
+            "height": 2160
+         }
+      ],
+      "output": "output-bucket"
+   }
+}
+```
+
 ## Current limitations
 
 Currently the [autoabr](https://github.com/Eyevinn/autoabr) package isn't available on NPM, therefore it's required to link this locally to be able to run the service.
