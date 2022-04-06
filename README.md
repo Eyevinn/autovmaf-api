@@ -1,12 +1,15 @@
 # autoabr-api
 
-API to orchestrate autoabr jobs.
+API to create, run and monitor [autoabr](https://github.com/Eyevinn/autoabr) jobs.
 
 Current features:
 
 - Possible to start initialize new jobs.
 - Possible to run multiple autoabr jobs in parallel.
 - Monitor how long a job have been running (milliseconds) and the status i.e `ACTIVE`/`INACTIVE`.
+
+New Autoabr instances will automatically be created if all current ones are in use.
+This makes it really easy to create and run jobs in parallel which wasn't possible before.
 
 ## Setup
 
@@ -70,4 +73,4 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 
 ## Current limitations
 
-Currently the [autoabr](https://github.com/Eyevinn/autoabr) package isn't available on NPM, therefore it's required to link this locally to be able to run the autoabr-api.
+Currently the [autoabr](https://github.com/Eyevinn/autoabr) package isn't available on NPM, therefore it's required to link this locally to be able to run the API.
