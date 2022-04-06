@@ -66,7 +66,7 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
           "height": 2160
         }
       ],
-      "output": "output-bucket"
+      "output": "output-folder-name-in-bucket"
    }
 }
 ```
