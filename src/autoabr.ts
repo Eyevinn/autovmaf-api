@@ -1,11 +1,11 @@
 import { createJob as createAutoABRJob } from '@eyevinn/autoabr';
 import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
-import { nanoid } from 'nanoid'
+import { nanoid } from 'nanoid';
 
 export enum State {
-  IDLE = "IDLE",
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
+  IDLE = 'IDLE',
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
 }
 
 export class AutoABR {
@@ -44,7 +44,7 @@ export class AutoABR {
   }
 
   public async downloadFromS3(S3url: string) {
-    const s3 = new S3({ region: (process.env.AWS_REGION || 'eu-north-1') });
+    const s3 = new S3({ region: process.env.AWS_REGION || 'eu-north-1' });
     console.log('Bucket: ' + S3url.split('/')[2] + ' Key: ' + S3url.split('/')[3]);
     const getCommand = new GetObjectCommand({ Bucket: S3url.split('/')[2], Key: S3url.split('/')[3] });
     const response = await s3.send(getCommand);
@@ -65,9 +65,9 @@ export class AutoABR {
 
   private async streamToString(stream: any): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      let responseDataChunks = []  as  any;
-      stream.Body.once('error', err => reject(err));
-      stream.Body.on('data', chunk => responseDataChunks.push(chunk));
+      let responseDataChunks = [] as any;
+      stream.Body.once('error', (err) => reject(err));
+      stream.Body.on('data', (chunk) => responseDataChunks.push(chunk));
       stream.Body.once('end', () => resolve(responseDataChunks.join('')));
     });
   }
