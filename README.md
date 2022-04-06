@@ -55,21 +55,23 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
       "name": "output-name",
       "reference": "s3://bucket/reference.mov",
       "models": [
-         "UHD"
+        "UHD"
       ],
       "bitrates": [
-         12800000
+        12800000
       ],
       "resolutions": [
-         {
-            "width": 3840,
-            "height": 2160
-         }
+        {
+          "width": 3840,
+          "height": 2160
+        }
       ],
       "output": "output-bucket"
    }
 }
 ```
+
+If the `pipeline` and `mediaConvertProfile` haven't been set it will use the default settings that can be found in `src/resources`.
 
 ## Current limitations
 
