@@ -71,7 +71,7 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 }
 ```
 
-If the `pipeline` and `mediaConvertProfile` haven't been set it will use the default settings that can be found in `src/resources`.
+If the `pipeline` and `encodingSettingsUrl` haven't been set it will use the default settings that can be found in `src/resources`.
 
 ## Current limitations
 
