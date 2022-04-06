@@ -40,4 +40,4 @@ Available endpoints are:
 
 ## Current limitations
 
-Currently the autoabr package isn't available on NPM, therefore it's required to link this locally to be able to run the service.
+Currently the [autoabr](https://github.com/Eyevinn/autoabr) package isn't available on NPM, therefore it's required to link this locally to be able to run the service.
