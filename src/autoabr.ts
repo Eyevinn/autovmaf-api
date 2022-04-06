@@ -57,7 +57,6 @@ export class AutoABR {
 
   private async start(jobData: any, pipelineData: any, encodingProfileData: any) {
     this.jobStatus = State.ACTIVE;
-    // create a timer to monitor how long a job takes
     this.startTime = new Date();
     await createAutoABRJob(jobData, pipelineData, encodingProfileData);
     this.endTime = new Date();
