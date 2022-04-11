@@ -4,7 +4,7 @@ API to create, run and monitor [autoabr](https://github.com/Eyevinn/autoabr) job
 
 Current features:
 
-- Possible to start initialize new jobs.
+- Possible to start new autoabr jobs.
 - Possible to run multiple autoabr jobs in parallel.
 - Monitor how long a job have been running (milliseconds) and the status i.e `ACTIVE`/`INACTIVE`.
 
