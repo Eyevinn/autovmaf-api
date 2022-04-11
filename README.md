@@ -53,7 +53,7 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
    "pipeline": "s3://vmaf-files/pipeline.json",
    "job": {
       "name": "output-name",
-      "reference": "s3://bucket/reference.mov",
+      "reference": "s3://vmaf-files/tv2-vod-references/reference.mov",
       "models": [
         "UHD"
       ],
@@ -66,7 +66,7 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
           "height": 2160
         }
       ],
-      "output": "output-folder-name-in-bucket"
+      "output": "output-folder-name-in-vmaf-files-bucket"
    }
 }
 ```
