@@ -29,10 +29,9 @@ export class AutoABR {
   }
 
   set status(status: State) {
-    if (!Object.values(State).includes(status)) {
-      console.error(`Invalid status: ${status}`);
+    if (Object.values(State).includes(status)) {
+      this.jobStatus = status;
     }
-    this.jobStatus = status;
   }
 
   getJobTimer() {
