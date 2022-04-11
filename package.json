@@ -1,14 +1,16 @@
 {
   "name": "autoabr-api",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "index.ts",
   "scripts": {
     "build": "tsc --project ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "MIT",
+  "author": "Eyevinn Technology <work@eyevinn.se>",
+  "contributors": [
+    "Oscar Nord <oscar.nord@eyevinn.se> (Eyevinn Technology AB)"
+  ],
   "devDependencies": {
     "@types/node": "^17.0.14",
     "typescript": "^4.5.2"
