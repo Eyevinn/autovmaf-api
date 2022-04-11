@@ -1,4 +1,4 @@
-import { createJob as createAutoABRJob } from '@eyevinn/autoabr';
+import { createJob as createAutoABRJob, getVmaf } from '@eyevinn/autoabr';
 import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 import { nanoid } from 'nanoid';
 
@@ -13,6 +13,7 @@ export class AutoABR {
   private jobStatus: State;
   private startTime = new Date();
   private endTime = new Date();
+  private latestJobOutput: string;
 
   constructor() {
     this.instanceId = nanoid();
@@ -30,10 +31,8 @@ export class AutoABR {
   set status(status: State) {
     if (!Object.values(State).includes(status)) {
       console.error(`Invalid status: ${status}`);
-      return;
     }
     this.jobStatus = status;
-    return;
   }
 
   getJobTimer() {
@@ -52,7 +51,25 @@ export class AutoABR {
   }
 
   public async createJob(jobData: any, pipelineData: any, encodingProfileData: any) {
+    this.latestJobOutput = jobData['output'];
     this.start(jobData, pipelineData, encodingProfileData);
+  }
+
+  public async getJobOutput(outputFolder: string): Promise<any> {
+    let output = {};
+    let folder = outputFolder ? outputFolder : this.latestJobOutput;
+    if(!folder || this.status === State.ACTIVE) return output;
+    try {
+      const vmafFiles = await getVmaf(`s3://vmaf-files/${folder}/UHD/`);
+      output[this.latestJobOutput] = {};
+      vmafFiles.forEach(file => {
+        output[this.latestJobOutput][file['filename']] = file['vmaf'];
+      });
+      return output;
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
   }
 
   private async start(jobData: any, pipelineData: any, encodingProfileData: any) {

@@ -82,6 +82,7 @@ export class AutoabrService {
         .header('Content-Type', 'application/json; charset=utf-8')
         .send({
           Message: 'Job created successfully! 🎞️',
+          Status: autoabrClient.status,
           Id: autoabrClient.id,
         });
     });
@@ -94,7 +95,6 @@ export class AutoabrService {
           .code(404)
           .header('Content-Type', 'application/json; charset=utf-8')
           .send({ Message: 'Job not found' });
-        return;
       }
       reply
         .code(200)
@@ -103,6 +103,19 @@ export class AutoabrService {
           Id: autoabrClient.id,
           Status: autoabrClient.status,
           RunningTime: autoabrClient.getJobTimer(),
+        });
+    });
+
+    this.fastify.get('/autoabr/result/:output', async (request, reply) => {
+      const output = request.params.output;
+      const autoabrClient = this.getAutoabrClient();
+      reply
+        .code(200)
+        .header('Content-Type', 'application/json; charset=utf-8')
+        .send({
+          Id: autoabrClient.id,
+          Status: autoabrClient.status,
+          Result: await autoabrClient.getJobOutput(output),
         });
     });
 
