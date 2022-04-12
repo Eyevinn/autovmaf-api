@@ -54,19 +54,22 @@ export class AutoABR {
     this.start(jobData, pipelineData, encodingProfileData);
   }
 
-  public async getJobOutput(outputFolder: string): Promise<any> {
+  public async getJobOutput(outputFolder?: string): Promise<any> {
     let output = {};
     let folder = outputFolder ? outputFolder : this.latestJobOutput;
     if(!folder || this.status === State.ACTIVE) return output;
+    this.jobStatus = State.ACTIVE;
     try {
       const vmafFiles = await getVmaf(`s3://vmaf-files/${folder}/UHD/`);
-      output[this.latestJobOutput] = {};
+      output[folder] = {};
       vmafFiles.forEach(file => {
-        output[this.latestJobOutput][file['filename']] = file['vmaf'];
+        output[folder][file['filename']] = file['vmaf'];
       });
+      this.jobStatus = State.INACTIVE;
       return output;
     } catch (error) {
       console.error(error);
+      this.jobStatus = State.INACTIVE;
       return {};
     }
   }
