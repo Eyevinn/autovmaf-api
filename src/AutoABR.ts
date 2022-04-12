@@ -18,6 +18,7 @@ export class AutoABR {
   constructor() {
     this.instanceId = nanoid();
     this.jobStatus = State.INACTIVE;
+    this.latestJobOutput = '';
   }
 
   get id() {
@@ -70,7 +71,7 @@ export class AutoABR {
     } catch (error) {
       console.error(error);
       this.jobStatus = State.INACTIVE;
-      return {};
+      throw error;
     }
   }
 
