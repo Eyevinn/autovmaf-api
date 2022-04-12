@@ -81,7 +81,7 @@ export class AutoabrService {
         .code(200)
         .header('Content-Type', 'application/json; charset=utf-8')
         .send({
-          Message: 'Job created successfully! 🎞️',
+          Message: 'Autoabr job created successfully! 🎞️',
           Status: autoabrClient.status,
           Id: autoabrClient.id,
         });
@@ -94,7 +94,7 @@ export class AutoabrService {
         reply
           .code(404)
           .header('Content-Type', 'application/json; charset=utf-8')
-          .send({ Message: 'Job not found' });
+          .send({ Message: 'Autoabr job not found' });
       }
       reply
         .code(200)
@@ -109,14 +109,26 @@ export class AutoabrService {
     this.fastify.get('/autoabr/result/:output', async (request, reply) => {
       const output = request.params.output;
       const autoabrClient = this.getAutoabrClient();
-      reply
-        .code(200)
-        .header('Content-Type', 'application/json; charset=utf-8')
-        .send({
-          Id: autoabrClient.id,
-          Status: autoabrClient.status,
-          Result: await autoabrClient.getJobOutput(output),
-        });
+      try {
+        const result = await autoabrClient.getJobOutput(output);
+        reply
+          .code(200)
+          .header('Content-Type', 'application/json; charset=utf-8')
+          .send({
+            Id: autoabrClient.id,
+            Status: autoabrClient.status,
+            Result: result,
+          });
+      } catch (error) {
+        reply
+          .code(500)
+          .header('Content-Type', 'application/json; charset=utf-8')
+          .send({
+            Id: autoabrClient.id,
+            Status: autoabrClient.status,
+            Message: 'Failed to load results from S3' 
+          });
+      }
     });
 
     this.fastify.get('/autoabr/status', async (request, reply) => {
