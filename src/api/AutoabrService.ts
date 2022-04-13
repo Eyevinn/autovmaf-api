@@ -29,7 +29,7 @@ export class AutoabrService {
     return this.autoabrClients[this.autoabrClients.length - 1];
   }
 
-  getAllAutoabrClients() {
+  private getAllAutoabrClients() {
     let clients = {};
     if (this.autoabrClients.length < 1) return clients;
     for (let i = 0; i < this.autoabrClients.length; i++) {
