@@ -1,4 +1,4 @@
-# autoabr-api
+# AutoABR API
 
 API to create, run and monitor [autoabr](https://github.com/Eyevinn/autoabr) jobs.
 
