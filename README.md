@@ -40,11 +40,11 @@ Available endpoints are:
 
 | Endpoint | Method | Description |
 | --------- | -------- | ----------- |
-| /               | `GET`       | Heartbeat endpoint of service |
-| /autoabr  | `POST`    | Create a new autoabr job. Provide JSON body  with settings|
-| /autoabr | `GET`       | List all active autoabr workers |
-| /autoabr/:id | `GET` | List info about a specific autoabr worker |
-| /autoabr/result/:output | `GET` | Download VMAF results from S3 and compile it into a JSON |
+| /               | `GET`       |Heartbeat endpoint of service |
+| /autoabr  | `POST`    |Create a new autoabr job. Provide JSON body with settings |
+| /autoabr | `GET`       |List all active autoabr workers |
+| /autoabr/:id | `GET` |List info about a specific autoabr worker |
+| /autoabr/result/:output | `GET` |Download VMAF results from S3 and compile it into a JSON |
 
 To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 
