@@ -29,6 +29,10 @@ export class AutoABR {
     return this.jobStatus;
   }
 
+  get jobOutput(): string {
+    return this.latestJobOutput;
+  }
+
   set status(status: State) {
     if (Object.values(State).includes(status)) {
       this.jobStatus = status;

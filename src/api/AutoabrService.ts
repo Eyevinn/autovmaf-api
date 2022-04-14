@@ -8,10 +8,13 @@ export class AutoabrService {
   private autoabrClients = [];
 
   constructor() {
-    this.fastify = Fastify({ logger: true });
+    this.fastify = Fastify({
+      logger: true,
+      ignoreTrailingSlash: true,
+    });
   }
 
-  private getAutoabrClient(id?: string) {
+  private getAutoabrClient(id?: string): AutoABR {
     if (id) return this.autoabrClients.find((client) => client.id === id);
     if (this.autoabrClients.length < 1) {
       this.autoabrClients = [new AutoABR()];
@@ -29,20 +32,22 @@ export class AutoabrService {
     return this.autoabrClients[this.autoabrClients.length - 1];
   }
 
-  private getAllAutoabrClients() {
+  private getAllAutoabrClients(): {} {
     let clients = {};
     if (this.autoabrClients.length < 1) return clients;
     for (let i = 0; i < this.autoabrClients.length; i++) {
-      clients[`Instance_${i}`] = {};
-      clients[`Instance_${i}`]['Id'] = this.autoabrClients[i].id;
-      clients[`Instance_${i}`]['Status'] = this.autoabrClients[i].status;
-      clients[`Instance_${i}`]['RunningTime'] = this.autoabrClients[i].getJobTimer();
+      clients[`worker_${i}`] = {
+        Id: this.autoabrClients[i].id,
+        Status: this.autoabrClients[i].status,
+        jobOutput: this.autoabrClients[i].jobOutput,
+        RunningTime: this.autoabrClients[i].getJobTimer(),
+      };
     }
     return clients;
   }
 
   private async routes() {
-    this.fastify.get('/healthcheck', async (request, reply) => {
+    this.fastify.get('/', async (request, reply) => {
       reply
         .code(200)
         .header('Content-Type', 'application/json; charset=utf-8')
@@ -73,7 +78,7 @@ export class AutoabrService {
         reply
           .code(500)
           .header('Content-Type', 'application/json; charset=utf-8')
-          .send({ Message: 'Failed to load settings from S3' });
+          .send({ message: 'Failed to load settings from S3' });
       }
 
       autoabrClient.createJob(job, pipeline, mediaConvertProfile);
@@ -81,13 +86,20 @@ export class AutoabrService {
         .code(200)
         .header('Content-Type', 'application/json; charset=utf-8')
         .send({
-          Message: 'Autoabr job created successfully! 🎞️',
-          Status: autoabrClient.status,
-          Id: autoabrClient.id,
+          message: 'Autoabr job created successfully! 🎞️',
+          status: autoabrClient.status,
+          id: autoabrClient.id,
         });
     });
 
-    this.fastify.get('/autoabr/:id/status', async (request, reply) => {
+    this.fastify.get('/autoabr', async (request, reply) => {
+      reply
+        .code(200)
+        .header('Content-Type', 'application/json; charset=utf-8')
+        .send(this.getAllAutoabrClients());
+    });
+
+    this.fastify.get('/autoabr/:id/', async (request, reply) => {
       const id = request.params.id;
       const autoabrClient = this.getAutoabrClient(id);
       if (!autoabrClient) {
@@ -100,9 +112,10 @@ export class AutoabrService {
         .code(200)
         .header('Content-Type', 'application/json; charset=utf-8')
         .send({
-          Id: autoabrClient.id,
-          Status: autoabrClient.status,
-          RunningTime: autoabrClient.getJobTimer(),
+          id: autoabrClient.id,
+          status: autoabrClient.status,
+          jobOutput: autoabrClient.jobOutput,
+          runningTime: autoabrClient.getJobTimer(),
         });
     });
 
@@ -115,27 +128,20 @@ export class AutoabrService {
           .code(200)
           .header('Content-Type', 'application/json; charset=utf-8')
           .send({
-            Id: autoabrClient.id,
-            Status: autoabrClient.status,
-            Result: result,
+            id: autoabrClient.id,
+            status: autoabrClient.status,
+            result: result,
           });
       } catch (error) {
         reply
           .code(500)
           .header('Content-Type', 'application/json; charset=utf-8')
           .send({
-            Id: autoabrClient.id,
-            Status: autoabrClient.status,
-            Message: 'Failed to load results from S3' 
+            id: autoabrClient.id,
+            status: autoabrClient.status,
+            message: 'Failed to load results from S3' 
           });
       }
-    });
-
-    this.fastify.get('/autoabr/status', async (request, reply) => {
-      reply
-        .code(200)
-        .header('Content-Type', 'application/json; charset=utf-8')
-        .send(this.getAllAutoabrClients());
     });
   }
 
