@@ -21,11 +21,11 @@ export class AutoABR {
     this.latestJobOutput = '';
   }
 
-  get id() {
+  get id(): string {
     return this.instanceId;
   }
 
-  get status() {
+  get status(): State {
     return this.jobStatus;
   }
 
@@ -35,14 +35,14 @@ export class AutoABR {
     }
   }
 
-  getJobTimer() {
+  getJobTimer(): number {
     if (this.jobStatus === State.ACTIVE) {
       return (new Date()).getTime() - this.startTime.getTime();
     }
     return this.endTime.getTime() - this.startTime.getTime();
   }
 
-  public async downloadFromS3(S3url: string) {
+  public async downloadFromS3(S3url: string): Promise<string> {
     const s3 = new S3({ region: process.env.AWS_REGION || 'eu-north-1' });
     console.log('Bucket: ' + S3url.split('/')[2] + ' Key: ' + S3url.split('/')[3]);
     const getCommand = new GetObjectCommand({ Bucket: S3url.split('/')[2], Key: S3url.split('/')[3] });
@@ -55,7 +55,7 @@ export class AutoABR {
     this.start(jobData, pipelineData, encodingProfileData);
   }
 
-  public async getJobOutput(outputFolder?: string): Promise<any> {
+  public async getJobOutput(outputFolder?: string): Promise<{}> {
     let output = {};
     let folder = outputFolder ? outputFolder : this.latestJobOutput;
     if(!folder || this.status === State.ACTIVE) return output;
