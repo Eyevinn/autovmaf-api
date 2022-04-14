@@ -31,7 +31,7 @@ The following environment variables need to be set:
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 AWS_REGION
-SKIP_FILEWRITE=true //to skip writing abr-ladder data to disk
+SKIP_FILEWRITE=true //To skip writing ABR-ladder data to disk
 ```
 
 The Autoabr service is now up and running and available on port `3000`.
