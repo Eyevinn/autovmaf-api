@@ -7,6 +7,7 @@ Current features:
 - Possible to start new autoabr jobs.
 - Possible to run multiple autoabr jobs in parallel.
 - Monitor how long a job have been running (milliseconds) and the status i.e `ACTIVE`/`INACTIVE`.
+- Download and compile VMAF results from S3 for all measured bitrates and resolutions for a specific job.
 
 New Autoabr instances will automatically be created if all current ones are in use.
 This makes it really easy to create and run jobs in parallel which wasn't possible before.
@@ -37,15 +38,13 @@ The Autoabr service is now up and running and available on port `3000`.
 
 Available endpoints are:
 
-`POST` /autoabr
-
-`GET` /autoabr/status
-
-`GET` /autoabr/:id/status
-
-`GET` /autoabr/result/:output
-
-`GET` /healthcheck
+| Endpoint | Method | Description |
+| --------- | -------- | ----------- |
+| /               | `GET`       |Heartbeat endpoint of service |
+| /autoabr  | `POST`    |Create a new autoabr job. Provide JSON body with settings |
+| /autoabr | `GET`       |List all active autoabr workers |
+| /autoabr/:id | `GET` |List info about a specific autoabr worker |
+| /autoabr/result/:output | `GET` |Download VMAF results from S3 and compile it into a JSON |
 
 To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 
@@ -54,21 +53,38 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
    "encodingSettingsUrl": "s3://vmaf-files/encoding-profile-h265.json",
    "pipeline": "s3://vmaf-files/pipeline.json",
    "job": {
-      "name": "output-name",
+      "name": "job-name",
+      "output": "output-folder-name-in-vmaf-files-bucket",
       "reference": "s3://vmaf-files/tv2-vod-references/reference.mov",
       "models": [
         "UHD"
       ],
       "bitrates": [
+        10000000,
         12800000
       ],
       "resolutions": [
         {
+          "width": 768,
+          "height": 432
+        },
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "width": 2560,
+          "height": 1440
+        },
+        {
           "width": 3840,
           "height": 2160
         }
-      ],
-      "output": "output-folder-name-in-vmaf-files-bucket"
+      ]
    }
 }
 ```
