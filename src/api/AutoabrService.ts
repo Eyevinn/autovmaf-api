@@ -5,7 +5,7 @@ import { default_profile } from '../resources/profiles';
 
 export class AutoabrService {
   private fastify: any;
-  private autoabrClients = [];
+  private autoabrWorkers = [];
 
   constructor() {
     this.fastify = Fastify({
@@ -14,33 +14,33 @@ export class AutoabrService {
     });
   }
 
-  private getAutoabrClient(id?: string): AutoABR {
-    if (id) return this.autoabrClients.find((client) => client.id === id);
-    if (this.autoabrClients.length < 1) {
-      this.autoabrClients = [new AutoABR()];
-      this.autoabrClients[0].status = State.IDLE;
-      return this.autoabrClients[0];
+  private getAutoabrWorker(id?: string): AutoABR {
+    if (id) return this.autoabrWorkers.find((client) => client.id === id);
+    if (this.autoabrWorkers.length < 1) {
+      this.autoabrWorkers = [new AutoABR()];
+      this.autoabrWorkers[0].status = State.IDLE;
+      return this.autoabrWorkers[0];
     }
-    for (let i = 0; i < this.autoabrClients.length; i++) {
-      if (this.autoabrClients[i].status === State.INACTIVE) {
-        this.autoabrClients[i].status = State.IDLE;
-        return this.autoabrClients[i];
+    for (let i = 0; i < this.autoabrWorkers.length; i++) {
+      if (this.autoabrWorkers[i].status === State.INACTIVE) {
+        this.autoabrWorkers[i].status = State.IDLE;
+        return this.autoabrWorkers[i];
       }
     }
-    this.autoabrClients.push(new AutoABR());
-    this.autoabrClients[this.autoabrClients.length - 1].status = State.IDLE;
-    return this.autoabrClients[this.autoabrClients.length - 1];
+    this.autoabrWorkers.push(new AutoABR());
+    this.autoabrWorkers[this.autoabrWorkers.length - 1].status = State.IDLE;
+    return this.autoabrWorkers[this.autoabrWorkers.length - 1];
   }
 
-  private getAllAutoabrClients(): {} {
+  private getAllAutoabrWorkers(): {} {
     let clients = {};
-    if (this.autoabrClients.length < 1) return clients;
-    for (let i = 0; i < this.autoabrClients.length; i++) {
+    if (this.autoabrWorkers.length < 1) return clients;
+    for (let i = 0; i < this.autoabrWorkers.length; i++) {
       clients[`worker_${i}`] = {
-        Id: this.autoabrClients[i].id,
-        Status: this.autoabrClients[i].status,
-        jobOutput: this.autoabrClients[i].jobOutput,
-        RunningTime: this.autoabrClients[i].getJobTimer(),
+        id: this.autoabrWorkers[i].id,
+        status: this.autoabrWorkers[i].status,
+        jobOutput: this.autoabrWorkers[i].jobOutput,
+        runningTime: this.autoabrWorkers[i].getJobTimer(),
       };
     }
     return clients;
@@ -61,17 +61,18 @@ export class AutoabrService {
       }
 
       const job = request.body.job;
-      let pipelineS3Url = request.body['pipelineUrl'];
-      let encodingS3Url = request.body['encodingSettingsUrl'];
+      const pipelineS3Url = request.body['pipelineUrl'];
+      const encodingS3Url = request.body['encodingSettingsUrl'];
+      const autoabrWorker = this.getAutoabrWorker();
       let mediaConvertProfile = default_profile;
       let pipeline = default_pipeline;
-      const autoabrClient = this.getAutoabrClient();
+
       try {
         if (pipelineS3Url) {
-          pipeline = JSON.parse(await autoabrClient.downloadFromS3(pipelineS3Url));
+          pipeline = JSON.parse(await autoabrWorker.downloadFromS3(pipelineS3Url));
         }
         if (encodingS3Url) {
-          mediaConvertProfile = JSON.parse(await autoabrClient.downloadFromS3(encodingS3Url));
+          mediaConvertProfile = JSON.parse(await autoabrWorker.downloadFromS3(encodingS3Url));
         }
       } catch (error) {
         console.error(error);
@@ -81,14 +82,15 @@ export class AutoabrService {
           .send({ message: 'Failed to load settings from S3' });
       }
 
-      autoabrClient.createJob(job, pipeline, mediaConvertProfile);
+      autoabrWorker.createJob(job, pipeline, mediaConvertProfile);
       reply
         .code(200)
         .header('Content-Type', 'application/json; charset=utf-8')
         .send({
-          message: 'Autoabr job created successfully! 🎞️',
-          status: autoabrClient.status,
-          id: autoabrClient.id,
+          id: autoabrWorker.id,
+          status: autoabrWorker.status,
+          jobOutput: autoabrWorker.jobOutput,
+          runningTime: autoabrWorker.getJobTimer(),
         });
     });
 
@@ -96,40 +98,40 @@ export class AutoabrService {
       reply
         .code(200)
         .header('Content-Type', 'application/json; charset=utf-8')
-        .send(this.getAllAutoabrClients());
+        .send(this.getAllAutoabrWorkers());
     });
 
     this.fastify.get('/autoabr/:id/', async (request, reply) => {
       const id = request.params.id;
-      const autoabrClient = this.getAutoabrClient(id);
-      if (!autoabrClient) {
+      const autoabrWorker = this.getAutoabrWorker(id);
+      if (!autoabrWorker) {
         reply
           .code(404)
           .header('Content-Type', 'application/json; charset=utf-8')
-          .send({ Message: 'Autoabr job not found' });
+          .send({ message: `Autoabr worker with id: ${id} could not be found` });
       }
       reply
         .code(200)
         .header('Content-Type', 'application/json; charset=utf-8')
         .send({
-          id: autoabrClient.id,
-          status: autoabrClient.status,
-          jobOutput: autoabrClient.jobOutput,
-          runningTime: autoabrClient.getJobTimer(),
+          id: autoabrWorker.id,
+          status: autoabrWorker.status,
+          jobOutput: autoabrWorker.jobOutput,
+          runningTime: autoabrWorker.getJobTimer(),
         });
     });
 
     this.fastify.get('/autoabr/result/:output', async (request, reply) => {
       const output = request.params.output;
-      const autoabrClient = this.getAutoabrClient();
+      const autoabrWorker = this.getAutoabrWorker();
       try {
-        const result = await autoabrClient.getJobOutput(output);
+        const result = await autoabrWorker.getJobOutput(output);
         reply
           .code(200)
           .header('Content-Type', 'application/json; charset=utf-8')
           .send({
-            id: autoabrClient.id,
-            status: autoabrClient.status,
+            id: autoabrWorker.id,
+            status: autoabrWorker.status,
             result: result,
           });
       } catch (error) {
@@ -137,8 +139,8 @@ export class AutoabrService {
           .code(500)
           .header('Content-Type', 'application/json; charset=utf-8')
           .send({
-            id: autoabrClient.id,
-            status: autoabrClient.status,
+            id: autoabrWorker.id,
+            status: autoabrWorker.status,
             message: 'Failed to load results from S3' 
           });
       }

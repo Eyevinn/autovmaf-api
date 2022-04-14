@@ -9,7 +9,7 @@ Current features:
 - Monitor how long a job have been running (milliseconds) and the status i.e `ACTIVE`/`INACTIVE`.
 - Download and compile VMAF results from S3 for all measured bitrates and resolutions for a specific job.
 
-New Autoabr instances will automatically be created if all current ones are in use.
+New Autoabr workers will automatically be created if all current ones are in use.
 This makes it really easy to create and run jobs in parallel which wasn't possible before.
 
 ## Setup
@@ -31,7 +31,7 @@ The following environment variables need to be set:
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 AWS_REGION
-SKIP_FILEWRITE=true //to skip writing abr-ladder data to disk
+SKIP_FILEWRITE=true //To skip writing ABR-ladder data to disk
 ```
 
 The Autoabr service is now up and running and available on port `3000`.
