@@ -142,6 +142,11 @@ export class AutoabrService {
     });
   }
 
+  /**
+    * Start the server
+    * @param {number} port - The port
+    * @param {string} host - The host (ip) address (Optional)
+    */
   async listen(port: number, host?: string) {
     await this.routes();
     this.fastify.listen(port, host, (err, address) => {
