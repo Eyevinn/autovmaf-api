@@ -142,9 +142,9 @@ export class AutoabrService {
     });
   }
 
-  async listen(port: number) {
+  async listen(port: number, host?: string) {
     await this.routes();
-    this.fastify.listen(port, (err, address) => {
+    this.fastify.listen(port, host, (err, address) => {
       if (err) {
         console.error(err);
         throw err;
