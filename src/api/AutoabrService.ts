@@ -16,11 +16,6 @@ export class AutoabrService {
 
   private getAutoabrWorker(id?: string): AutoABR {
     if (id) return this.autoabrWorkers.find((client) => client.id === id);
-    if (this.autoabrWorkers.length < 1) {
-      this.autoabrWorkers = [new AutoABR()];
-      this.autoabrWorkers[0].status = State.IDLE;
-      return this.autoabrWorkers[0];
-    }
     for (let i = 0; i < this.autoabrWorkers.length; i++) {
       if (this.autoabrWorkers[i].status === State.INACTIVE) {
         this.autoabrWorkers[i].status = State.IDLE;
