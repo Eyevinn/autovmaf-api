@@ -36,6 +36,11 @@ export class AutoabrService {
     return MCsettings;
   }
 
+  private deleteCache() {
+    this.MCsettings.clear();
+    this.pipelines.clear();
+  }
+
   private async getPipelineSettings(url: string, autoabrWorker: AutoABR): Promise<any> {
     if (this.pipelines.has(url)) return this.pipelines.get(url);
     const pipeline = JSON.parse(await autoabrWorker.downloadFromS3(url));
@@ -155,6 +160,14 @@ export class AutoabrService {
             message: 'Failed to load results from S3' 
           });
       }
+    });
+
+    this.fastify.delete('/autoabr/cache', async (request, reply) => {
+      this.deleteCache();
+      reply
+        .code(200)
+        .header('Content-Type', 'application/json; charset=utf-8')
+        .send({ message: 'Cache deleted' });
     });
   }
 
