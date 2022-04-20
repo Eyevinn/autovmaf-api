@@ -17,7 +17,7 @@ This makes it really easy to create and run jobs in parallel which wasn't possib
 To initialize a new `AutoabrService` do:
 
 ```typescript
-import { AutoabrService } from './src/api/AutoabrService';
+import { AutoabrService } from 'from "@eyevinn/autoabr-api";
 
 // initialize a new instance of AutoabrService
 const autoabrService = new AutoabrService();
