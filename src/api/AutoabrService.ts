@@ -6,6 +6,8 @@ import { default_profile } from '../resources/profiles';
 export class AutoabrService {
   private fastify: any;
   private autoabrWorkers = [];
+  private MCsettings = new Map<string, {}>();
+  private pipelines = new Map<string, {}>();
 
   constructor() {
     this.fastify = Fastify({
@@ -25,6 +27,25 @@ export class AutoabrService {
     this.autoabrWorkers.push(new AutoABR());
     this.autoabrWorkers[this.autoabrWorkers.length - 1].status = State.IDLE;
     return this.autoabrWorkers[this.autoabrWorkers.length - 1];
+  }
+
+  private async getMCsettings(url: string, autoabrWorker: AutoABR): Promise<any> {
+    if (this.MCsettings.has(url)) return this.MCsettings.get(url);
+    const MCsettings = JSON.parse(await autoabrWorker.downloadFromS3(url));
+    this.MCsettings.set(url, MCsettings);
+    return MCsettings;
+  }
+
+  private deleteCache() {
+    this.MCsettings.clear();
+    this.pipelines.clear();
+  }
+
+  private async getPipelineSettings(url: string, autoabrWorker: AutoABR): Promise<any> {
+    if (this.pipelines.has(url)) return this.pipelines.get(url);
+    const pipeline = JSON.parse(await autoabrWorker.downloadFromS3(url));
+    this.pipelines.set(url, pipeline);
+    return pipeline;
   }
 
   private getAllAutoabrWorkers(): {} {
@@ -64,10 +85,10 @@ export class AutoabrService {
 
       try {
         if (pipelineS3Url) {
-          pipeline = JSON.parse(await autoabrWorker.downloadFromS3(pipelineS3Url));
+          pipeline = await this.getPipelineSettings(pipelineS3Url, autoabrWorker);
         }
         if (encodingS3Url) {
-          mediaConvertProfile = JSON.parse(await autoabrWorker.downloadFromS3(encodingS3Url));
+          mediaConvertProfile = await this.getMCsettings(encodingS3Url, autoabrWorker);
         }
       } catch (error) {
         console.error(error);
@@ -139,6 +160,14 @@ export class AutoabrService {
             message: 'Failed to load results from S3' 
           });
       }
+    });
+
+    this.fastify.delete('/autoabr/cache', async (request, reply) => {
+      this.deleteCache();
+      reply
+        .code(200)
+        .header('Content-Type', 'application/json; charset=utf-8')
+        .send({ message: 'Cache deleted' });
     });
   }
 
