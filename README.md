@@ -45,6 +45,7 @@ Available endpoints are:
 | /autoabr | `GET`       |List all active autoabr workers |
 | /autoabr/:id | `GET` |List info about a specific autoabr worker |
 | /autoabr/result/:output | `GET` |Download VMAF results from S3 and compile it into a JSON |
+| /autoabr/cache | `DELETE` |Clear MediaConvert and AWS pipeline settings cache |
 
 To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 

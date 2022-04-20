@@ -36,7 +36,7 @@ export class AutoabrService {
     return MCsettings;
   }
 
-  private deleteCache() {
+  private clearAWSCache() {
     this.MCsettings.clear();
     this.pipelines.clear();
   }
@@ -163,7 +163,7 @@ export class AutoabrService {
     });
 
     this.fastify.delete('/autoabr/cache', async (request, reply) => {
-      this.deleteCache();
+      this.clearAWSCache();
       reply
         .code(200)
         .header('Content-Type', 'application/json; charset=utf-8')
