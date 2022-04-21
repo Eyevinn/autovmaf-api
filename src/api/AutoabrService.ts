@@ -96,18 +96,27 @@ export class AutoabrService {
           .code(500)
           .header('Content-Type', 'application/json; charset=utf-8')
           .send({ message: 'Failed to load settings from S3' });
+        return;
       }
-
-      autoabrWorker.createJob(job, pipeline, mediaConvertProfile);
-      reply
-        .code(200)
-        .header('Content-Type', 'application/json; charset=utf-8')
-        .send({
-          id: autoabrWorker.id,
-          status: autoabrWorker.status,
-          jobOutput: autoabrWorker.jobOutput,
-          runningTime: autoabrWorker.getJobTimer(),
-        });
+      try {
+        autoabrWorker.createJob(job, pipeline, mediaConvertProfile);
+        reply
+          .code(200)
+          .header('Content-Type', 'application/json; charset=utf-8')
+          .send({
+            id: autoabrWorker.id,
+            status: autoabrWorker.status,
+            jobOutput: autoabrWorker.jobOutput,
+            runningTime: autoabrWorker.getJobTimer(),
+          });
+      } catch (error) {
+        console.error(error);
+        reply
+          .code(500)
+          .header('Content-Type', 'application/json; charset=utf-8')
+          .send({ message: 'Failed to create job' });
+        return;
+      }
     });
 
     this.fastify.get('/autoabr', async (request, reply) => {
@@ -125,6 +134,7 @@ export class AutoabrService {
           .code(404)
           .header('Content-Type', 'application/json; charset=utf-8')
           .send({ message: `Autoabr worker with id: ${id} could not be found` });
+        return;
       }
       reply
         .code(200)
