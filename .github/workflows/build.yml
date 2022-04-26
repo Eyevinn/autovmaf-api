@@ -38,3 +38,4 @@ jobs:
           image: ${{ env.ECR_REPOSITORY }}
           registry: ${{ steps.login-ecr.outputs.registry }}
           dockerfile: Dockerfile
+          addLatest: true
