@@ -1,6 +1,6 @@
-# AutoABR API
+# AutoVMAF API
 
-API to create, run and monitor [autoabr](https://github.com/Eyevinn/autoabr) jobs.
+API to create, run and monitor [autovmaf](https://github.com/Eyevinn/autovmaf) jobs.
 
 Current features:
 
