@@ -1,4 +1,4 @@
-import { createJob as createAutoABRJob, getVmaf } from '@eyevinn/autoabr';
+import { createJob as createAutoABRJob, getVmaf } from '@eyevinn/autovmaf';
 import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 import { nanoid } from 'nanoid';
 
