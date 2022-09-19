@@ -93,7 +93,3 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 If the `pipeline` and `encodingSettingsUrl` haven't been set it will use the default settings that can be found in `src/resources`.
 
 The `/autoabr/result/:output` (output is the output specified in the job JSON) will download and process all resulting VMAF files from AWS and return the result. This process can take a while depending on how many resolutions and bitrates that have been measured. This means that the response from the endpoint can take several seconds.
-
-## Current limitations
-
-Currently the [autoabr](https://github.com/Eyevinn/autoabr) package isn't available on NPM, therefore it's required to link this locally to be able to run the API.
