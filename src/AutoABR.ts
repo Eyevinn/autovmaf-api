@@ -48,8 +48,10 @@ export class AutoABR {
 
   public async downloadFromS3(S3url: string): Promise<string> {
     const s3 = new S3({ region: process.env.AWS_REGION || 'eu-north-1' });
-    console.log('Bucket: ' + S3url.split('/')[2] + ' Key: ' + S3url.split('/')[3]);
-    const getCommand = new GetObjectCommand({ Bucket: S3url.split('/')[2], Key: S3url.split('/')[3] });
+    const s3bucket = S3url.split('/')[2];
+    const s3key = S3url.split('/').slice(3).join('/');
+    console.log(`Bucket: ${s3bucket}, Key: ${s3key}`);
+    const getCommand = new GetObjectCommand({ Bucket: `${s3bucket}`, Key: `${s3key}` });
     const response = await s3.send(getCommand);
     return await this.streamToString(response);
   }

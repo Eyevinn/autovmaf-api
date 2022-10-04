@@ -87,15 +87,24 @@ export class AutoabrService {
         if (pipelineS3Url) {
           pipeline = await this.getPipelineSettings(pipelineS3Url, autoabrWorker);
         }
+      } catch (error) {
+        console.error(error.message);
+        reply
+          .code(500)
+          .header('Content-Type', 'application/json; charset=utf-8')
+          .send({ message: 'Failed to load pipeline settings from S3' });
+        return;
+      }
+      try {
         if (encodingS3Url) {
           mediaConvertProfile = await this.getMCsettings(encodingS3Url, autoabrWorker);
         }
       } catch (error) {
-        console.error(error);
+        console.error(error.message);
         reply
           .code(500)
           .header('Content-Type', 'application/json; charset=utf-8')
-          .send({ message: 'Failed to load settings from S3' });
+          .send({ message: 'Failed to load MediaConvert settings from S3' });
         return;
       }
       try {
