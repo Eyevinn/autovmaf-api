@@ -28,10 +28,11 @@ autoabrService.listen(3000);
 The following environment variables need to be set:
 
 ```bash
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-AWS_REGION
+AWS_ACCESS_KEY_ID=MyAccessKeyID
+AWS_SECRET_ACCESS_KEY=MySecretAccessKey
+AWS_REGION=eu-north-1
 SKIP_FILEWRITE=true //To skip writing ABR-ladder data to disk
+LOAD_CREDENTIALS_FROM_ENV=true // If false, it will load credentials from ~/.aws/credentials
 ```
 
 The Autoabr service is now up and running and available on port `3000`.
