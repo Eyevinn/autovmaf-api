@@ -52,7 +52,7 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 ```json
 {
    "encodingSettingsUrl": "s3://vmaf-files/encoding-profile-h265.json",
-   "pipeline": "s3://vmaf-files/pipeline.json",
+   "pipelineUrl": "s3://vmaf-files/pipeline.json",
    "job": {
       "name": "job-name",
       "output": "output-folder-name-in-vmaf-files-bucket",
@@ -90,6 +90,6 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 }
 ```
 
-If the `pipeline` and `encodingSettingsUrl` haven't been set it will use the default settings that can be found in `src/resources`.
+If the `pipelineUrl` and `encodingSettingsUrl` haven't been set it will use the default settings that can be found in `src/resources`.
 
 The `/autoabr/result/:output` (output is the output specified in the job JSON) will download and process all resulting VMAF files from AWS and return the result. This process can take a while depending on how many resolutions and bitrates that have been measured. This means that the response from the endpoint can take several seconds.
