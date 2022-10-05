@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import { AutoABR, State } from '../AutoABR';
+import { AutoABR, State } from '../AutoVMAF';
 import { default_pipeline } from '../resources/pipelines';
 import { default_profile } from '../resources/profiles';
 
