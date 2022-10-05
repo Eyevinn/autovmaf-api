@@ -70,8 +70,9 @@ export class AutoABR {
     if (model) {
       try {
         const vmafFiles = await getVmaf(`s3://vmaf-files/results/encoded-files/${folder}/${model}/`);
+        output[folder][model] = {}
         vmafFiles.map(file => {
-          output[folder][file['filename']] = file['vmaf'];
+          output[folder][model][file['filename']] = file['vmaf'];
         });
         this.jobStatus = State.INACTIVE;
         return output;
