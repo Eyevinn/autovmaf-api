@@ -1,4 +1,4 @@
-import { createJob as createAutoABRJob, getVmaf } from '@eyevinn/autovmaf';
+import { createJob as createAutoABRJob, getVmaf, logger, QualityAnalysisModel } from '@eyevinn/autovmaf';
 import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 import { nanoid } from 'nanoid';
 
@@ -61,23 +61,37 @@ export class AutoABR {
     this.start(jobData, pipelineData, encodingProfileData);
   }
 
-  public async getJobOutput(outputFolder?: string): Promise<{}> {
+  public async getJobOutput(outputFolder?: string, model?: string): Promise<{}> {
     let output = {};
     let folder = outputFolder ? outputFolder : this.latestJobOutput;
     if(!folder || this.status === State.ACTIVE) return output;
     this.jobStatus = State.ACTIVE;
-    try {
-      const vmafFiles = await getVmaf(`s3://vmaf-files/${folder}/UHD/`);
-      output[folder] = {};
-      vmafFiles.forEach(file => {
-        output[folder][file['filename']] = file['vmaf'];
-      });
+    output[folder] = {};
+    if (model) {
+      try {
+        const vmafFiles = await getVmaf(`s3://vmaf-files/results/encoded-files/${folder}/${model}/`);
+        vmafFiles.map(file => {
+          output[folder][file['filename']] = file['vmaf'];
+        });
+        this.jobStatus = State.INACTIVE;
+        return output;
+      } catch (error) {
+        console.error(error);
+        this.jobStatus = State.INACTIVE;
+        throw error;
+      }
+    } else {
+      const models = Object.keys(QualityAnalysisModel).filter((v) => isNaN(Number(v)));
+
+      for (const model in models) {
+        output[folder][models[model]] = {}
+        const vmafFiles = await getVmaf(`s3://vmaf-files/results/encoded-files/${folder}/${models[model]}/`);
+        vmafFiles.map(file => {
+          output[folder][models[model]][file['filename']] = file['vmaf'];
+        });
+      }
       this.jobStatus = State.INACTIVE;
       return output;
-    } catch (error) {
-      console.error(error);
-      this.jobStatus = State.INACTIVE;
-      throw error;
     }
   }
 
