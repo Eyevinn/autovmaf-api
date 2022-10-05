@@ -1,4 +1,4 @@
-import { createJob as createAutoABRJob, getVmaf, logger, QualityAnalysisModel } from '@eyevinn/autovmaf';
+import { createJob as createAutoVMAFJob, getVmaf, logger, QualityAnalysisModel } from '@eyevinn/autovmaf';
 import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 import { nanoid } from 'nanoid';
 
@@ -99,7 +99,7 @@ export class AutoABR {
   private async start(jobData: any, pipelineData: any, encodingProfileData: any) {
     this.jobStatus = State.ACTIVE;
     this.startTime = new Date();
-    await createAutoABRJob(jobData, pipelineData, encodingProfileData);
+    await createAutoVMAFJob(jobData, pipelineData, encodingProfileData);
     this.endTime = new Date();
     this.jobStatus = State.INACTIVE;
   }
