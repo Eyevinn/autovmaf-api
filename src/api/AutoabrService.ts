@@ -159,17 +159,48 @@ export class AutoabrService {
     this.fastify.get('/autoabr/result/:output/:model', async (request, reply) => {
       const output = request.params.output;
       const model = request.params.model;
+      const csv = request.query.csv;
       const autoabrWorker = this.getAutoabrWorker();
       try {
         const result = await autoabrWorker.getJobOutput(output, model);
-        reply
+        if (csv != undefined && model) {
+          let data = `output,model,resolution,bitrate,vmaf score\n`
+          for (const r in result[output][model]) {
+            const res = r.split('_')[0]
+            const bitrate = r.split('_')[1]
+            const score = result[output][model][r]
+            data += `${output},${model},${res},${bitrate},${score}\n`
+          }
+          reply
           .code(200)
-          .header('Content-Type', 'application/json; charset=utf-8')
-          .send({
-            id: autoabrWorker.id,
-            status: autoabrWorker.status,
-            result: result,
-          });
+          .header('Content-Type', 'text/csv; charset=utf-8')
+          .send(data);
+        } else if (csv != undefined && !model) {
+          let data = `output,model,resolution,bitrate,vmaf score\n`
+          for (const m in result[output]) {
+            if (Object.keys(result[output][m]).length) {
+              for (const r in result[output][m]) {
+                const res = r.split('_')[0]
+                const bitrate = r.split('_')[1]
+                const score = result[output][m][r]
+                data += `${output},${m},${res},${bitrate},${score}\n`
+              }
+            }
+          }
+          reply
+          .code(200)
+          .header('Content-Type', 'text/csv; charset=utf-8')
+          .send(data);
+        } else {
+          reply
+            .code(200)
+            .header('Content-Type', 'application/json; charset=utf-8')
+            .send({
+              id: autoabrWorker.id,
+              status: autoabrWorker.status,
+              result: result,
+            });
+        }
       } catch (error) {
         reply
           .code(500)
