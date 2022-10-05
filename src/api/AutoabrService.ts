@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import { AutoABR, State } from '../AutoABR';
+import { AutoABR, State } from '../AutoVMAF';
 import { default_pipeline } from '../resources/pipelines';
 import { default_profile } from '../resources/profiles';
 
@@ -156,11 +156,12 @@ export class AutoabrService {
         });
     });
 
-    this.fastify.get('/autoabr/result/:output', async (request, reply) => {
+    this.fastify.get('/autoabr/result/:output/:model', async (request, reply) => {
       const output = request.params.output;
+      const model = request.params.model;
       const autoabrWorker = this.getAutoabrWorker();
       try {
-        const result = await autoabrWorker.getJobOutput(output);
+        const result = await autoabrWorker.getJobOutput(output, model);
         reply
           .code(200)
           .header('Content-Type', 'application/json; charset=utf-8')
@@ -176,7 +177,7 @@ export class AutoabrService {
           .send({
             id: autoabrWorker.id,
             status: autoabrWorker.status,
-            message: 'Failed to load results from S3' 
+            message: 'Failed to load results from S3'
           });
       }
     });
