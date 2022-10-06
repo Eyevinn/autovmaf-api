@@ -70,7 +70,6 @@ To start a new Autoabr job send a `POST` request to the `/autoabr` endpoint with
    "pipelineUrl": "s3://vmaf-files/pipeline.json",
    "job": {
       "name": "job-name",
-      "output": "output-name",
       "reference": "s3://vmaf-files/tv2-vod-references/reference.mov",
       "models": [
         "UHD"
@@ -112,7 +111,7 @@ If the `pipelineUrl` and `encodingSettingsUrl` haven't been set it will use the 
 The endpoint `/autoabr/result/:output/` (output is the output specified in the `job` payload) will download and process all resulting VMAF files from AWS and return the result. This process can take a while depending on how many resolutions and bitrates that have been measured. This means that the response from the endpoint can take several seconds.
 
 #### Example JSON Response
-`GET /autoabr/result/output-name/`
+`GET /autoabr/result/job-name/`
 ```json
 {
     "id": "BxTH45aRiyAAq_TBbbHqH",
@@ -133,12 +132,12 @@ The endpoint `/autoabr/result/:output/` (output is the output specified in the `
 ```
 
 #### Example CSV Response
-`GET /autoabr/result/output-name/?csv`
+`GET /autoabr/result/job-name/?csv`
 ```CSV
 output,model,resolution,bitrate,vmaf score
-output-name,HD,1280x720,10000000,91.12216
-output-name,HD,1280x720,12800000,91.12216
-output-name,HD,1920x1080,10000000,97.427916
-output-name,HD,1920x1080,12800000,97.427916
+job-name,HD,1280x720,10000000,91.12216
+job-name,HD,1280x720,12800000,91.12216
+job-name,HD,1920x1080,10000000,97.427916
+job-name,HD,1920x1080,12800000,97.427916
 
 ```
