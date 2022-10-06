@@ -22,7 +22,6 @@ The following environment variables need to be set.
 AWS_ACCESS_KEY_ID=MyAccessKeyID
 AWS_SECRET_ACCESS_KEY=MySecretAccessKey
 AWS_REGION=eu-north-1
-SKIP_FILEWRITE=true //To skip writing ABR-ladder data to disk
 LOAD_CREDENTIALS_FROM_ENV=true // If false, it will load credentials from ~/.aws/credentials
 ```
 Using an `.env` file is supported. Just rename `.env.example` to `.env` and insert your values.
