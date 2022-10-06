@@ -2,10 +2,8 @@ name: Build image and push to ECR
 
 on:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - '**.md'
+    tags:
+      - '*'
 
 env:
   AWS_REGION: eu-north-1
