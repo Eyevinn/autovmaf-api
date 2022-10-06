@@ -10,9 +10,23 @@ Current features:
 - Download and compile VMAF results from S3 for all measured bitrates and resolutions for a specific job.
 
 New Autoabr workers will automatically be created if all current ones are in use.
-This makes it really easy to create and run jobs in parallel which wasn't possible before.
+This makes it really easy to create and run jobs in parallel.
 
 ## Setup
+
+### Environment
+
+The following environment variables need to be set.
+
+```bash
+AWS_ACCESS_KEY_ID=MyAccessKeyID
+AWS_SECRET_ACCESS_KEY=MySecretAccessKey
+AWS_REGION=eu-north-1
+LOAD_CREDENTIALS_FROM_ENV=true // If false, it will load credentials from ~/.aws/credentials
+```
+Using an `.env` file is supported. Just rename `.env.example` to `.env` and insert your values.
+
+### Initialize
 
 To initialize a new `AutoabrService` do:
 
@@ -25,17 +39,10 @@ const autoabrService = new AutoabrService();
 autoabrService.listen(3000);
 ```
 
-The following environment variables need to be set:
-
-```bash
-AWS_ACCESS_KEY_ID=MyAccessKeyID
-AWS_SECRET_ACCESS_KEY=MySecretAccessKey
-AWS_REGION=eu-north-1
-SKIP_FILEWRITE=true //To skip writing ABR-ladder data to disk
-LOAD_CREDENTIALS_FROM_ENV=true // If false, it will load credentials from ~/.aws/credentials
-```
 
 The Autoabr service is now up and running and available on port `3000`.
+
+## Endpoints
 
 Available endpoints are:
 
@@ -45,13 +52,17 @@ Available endpoints are:
 | `/autoabr`  | `POST`    |Create a new autoabr job. Provide JSON body with settings |
 | `/autoabr` | `GET`       |List all active autoabr workers |
 | `/autoabr/:id` | `GET` |List info about a specific autoabr worker |
-| `/autoabr/result/:output` | `GET` |Download VMAF results from S3 and compile it into a JSON |
-| `/autoabr/result/:output?csv` | `GET` |Download VMAF results from S3 and compile it into CSV |
-| `/autoabr/result/:output/:model` | `GET` |Download VMAF results from S3 and compile it into a JSON for a specific model |
+| `/autoabr/result/:output/` | `GET` |Download VMAF results from S3 and compile it into JSON. _**NOTE:** Trailing slash is not optional!_ |
+| `/autoabr/result/:output/:model` | `GET` |Download VMAF results from S3 and compile it into JSON for a specific model |
+| `/autoabr/result/:output/?csv` | `GET` |Download VMAF results from S3 and compile it into CSV. _**NOTE:** Trailing slash is not optional!_ |
 | `/autoabr/result/:output/:model?csv` | `GET` |Download VMAF results from S3 and compile it into CSV for a specific model |
 | `/autoabr/cache` | `DELETE` |Clear MediaConvert and AWS pipeline settings cache |
 
-To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
+## Example requests
+
+### Start a job
+
+To start a new Autoabr job send a `POST` request to the `/autoabr` endpoint with :
 
 ```json
 {
@@ -59,7 +70,6 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
    "pipelineUrl": "s3://vmaf-files/pipeline.json",
    "job": {
       "name": "job-name",
-      "output": "output-folder-name-in-vmaf-files-bucket",
       "reference": "s3://vmaf-files/tv2-vod-references/reference.mov",
       "models": [
         "UHD"
@@ -96,4 +106,38 @@ To start a new Autoabr job do a `POST` to the `/autoabr` endpoint:
 
 If the `pipelineUrl` and `encodingSettingsUrl` haven't been set it will use the default settings that can be found in `src/resources`.
 
-The `/autoabr/result/:output` (output is the output specified in the job JSON) will download and process all resulting VMAF files from AWS and return the result. This process can take a while depending on how many resolutions and bitrates that have been measured. This means that the response from the endpoint can take several seconds.
+### Get results
+
+The endpoint `/autoabr/result/:output/` (output is the output specified in the `job` payload) will download and process all resulting VMAF files from AWS and return the result. This process can take a while depending on how many resolutions and bitrates that have been measured. This means that the response from the endpoint can take several seconds.
+
+#### Example JSON Response
+`GET /autoabr/result/job-name/`
+```json
+{
+    "id": "BxTH45aRiyAAq_TBbbHqH",
+    "status": "INACTIVE",
+    "result": {
+        "job-name": {
+            "PhoneHD": {},
+            "HD": {
+                "1280x720_10000000_vmaf.json": 91.12216,
+                "1280x720_12800000_vmaf.json": 91.12216,
+                "1920x1080_10000000_vmaf.json": 97.427916,
+                "1920x1080_12800000_vmaf.json": 97.427916
+            },
+            "UHD": {}
+        }
+    }
+}
+```
+
+#### Example CSV Response
+`GET /autoabr/result/job-name/?csv`
+```CSV
+output,model,resolution,bitrate,vmaf score
+job-name,HD,1280x720,10000000,91.12216
+job-name,HD,1280x720,12800000,91.12216
+job-name,HD,1920x1080,10000000,97.427916
+job-name,HD,1920x1080,12800000,97.427916
+
+```
