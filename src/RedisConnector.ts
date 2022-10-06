@@ -6,7 +6,7 @@ export class RedisConnector {
   constructor() {
     this.redisClient = createClient();
     this.redisClient.on('error', (err: any) => {
-      console.log('Error ' + err);
+      console.error('RedisConnector error ' + err);
     });
     this.redisClient.connect();
   }
