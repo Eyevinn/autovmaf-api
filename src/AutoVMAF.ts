@@ -1,4 +1,4 @@
-import { createJob as createAutoVMAFJob, getVmaf, logger, QualityAnalysisModel } from '@eyevinn/autovmaf';
+import { createJob as createAutoVMAFJob, getVmaf, logger, QualityAnalysisModel, suggestLadder } from '@eyevinn/autovmaf';
 import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 import { nanoid } from 'nanoid';
 
@@ -94,6 +94,11 @@ export class AutoABR {
       this.jobStatus = State.INACTIVE;
       return output;
     }
+  }
+
+  public async getSuggestedLadder(s3directory: string): Promise<{}> {
+    const ladder = suggestLadder(`s3://vmaf-files/results/encoded-files/${s3directory}/HD/`)
+    return ladder;
   }
 
   private async start(jobData: any, pipelineData: any, encodingProfileData: any) {

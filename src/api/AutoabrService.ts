@@ -213,6 +213,17 @@ export class AutoabrService {
       }
     });
 
+    this.fastify.get('/autovmaf/ladder/:output', async (request, reply) => {
+      const output = request.params.output;
+      const autoabrWorker = this.getAutoabrWorker();
+      try {
+        const result = await autoabrWorker.getSuggestedLadder(output);
+        return result;
+      } catch (error) {
+        console.error(error)
+      }
+    })
+
     this.fastify.delete('/autoabr/cache', async (request, reply) => {
       this.clearAWSCache();
       reply
