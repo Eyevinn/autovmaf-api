@@ -88,7 +88,7 @@ export class AutoabrService {
         }
       }
     }
-    data.sort((a, b) => (a[3] == b[3]) ? a[4] - b[4] : b[3] - a[3]); // sort by height, then bitrate
+    data.sort((a, b) => (a[3] == b[3]) ? a[4] - b[4] : a[3] - b[3]); // sort by height, then bitrate
     data = [headers, ...data]
     let csv = data.map(fields => fields.join(separator)).join("\n")
     return csv
