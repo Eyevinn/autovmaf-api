@@ -195,27 +195,30 @@ export class AutoabrService {
       const autoabrWorker = this.getAutoabrWorker();
       try {
         const result = await autoabrWorker.getJobOutput(output, model);
+        let ext = format == "tsv" ? format : "csv"
         if (format != undefined && model) {
           let data = this.formatResults(result, output, model, format)
           reply
           .code(200)
           .header('Content-Type', 'text/csv; charset=utf-8')
+          .header('Content-Disposition', `attachment; filename=${output}-${model}.${ext}`)
           .send(data);
         } else if (format != undefined && !model) {
           let data = this.formatResults(result, output, undefined, format)
           reply
           .code(200)
           .header('Content-Type', 'text/csv; charset=utf-8')
+          .header('Content-Disposition', `attachment; filename=${output}.${ext}`)
           .send(data);
         } else {
           reply
-            .code(200)
-            .header('Content-Type', 'application/json; charset=utf-8')
-            .send({
-              id: autoabrWorker.id,
-              status: autoabrWorker.status,
-              result: result,
-            });
+          .code(200)
+          .header('Content-Type', 'application/json; charset=utf-8')
+          .send({
+            id: autoabrWorker.id,
+            status: autoabrWorker.status,
+            result: result,
+          });
         }
       } catch (error) {
         reply
