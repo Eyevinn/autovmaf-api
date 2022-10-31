@@ -139,3 +139,16 @@ job-name,HD,1920,1080,10000000,97.427916
 job-name,HD,1920,1080,12800000,97.427916
 
 ```
+
+#### Example TSV Response
+
+`GET /autoabr/result/job-name/?format=tsv`
+
+```CSV
+jobname	model	width	height	bitrate	score
+job-name	HD	1280	720	10000000	91.12216
+job-name	HD	1280	720	12800000	91.12216
+job-name	HD	1920	1080	10000000	97.427916
+job-name	HD	1920	1080	12800000	97.427916
+
+```
