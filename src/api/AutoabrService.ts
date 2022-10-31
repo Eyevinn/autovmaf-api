@@ -62,6 +62,38 @@ export class AutoabrService {
     return clients;
   }
 
+  formatResults(result: object, jobname: string, model?: string, format?: string) {
+    let separator = ""
+    format === "tsv" ? separator = "\t" : separator = ","
+    let headers = ["jobname", "model", "width", "height", "bitrate", "score"]
+    let data = []
+    if (model) {
+      for (const r in result[jobname][model]) {
+        const res = r.split('_')[0]
+        const [ width, height ] = res.split('x')
+        const bitrate = r.split('_')[1]
+        const score = result[jobname][model][r]
+        data.push([jobname, model, width, height, bitrate, score])
+      }
+    } else {
+      for (const m in result[jobname]) {
+        if (Object.keys(result[jobname][m]).length) {
+          for (const r in result[jobname][m]) {
+            const res = r.split('_')[0]
+            const [ width, height ] = res.split('x')
+            const bitrate = r.split('_')[1]
+            const score = result[jobname][m][r]
+            data.push([jobname, m, width, height, bitrate, score])
+          }
+        }
+      }
+    }
+    data.sort((a, b) => (a[3] == b[3]) ? a[4] - b[4] : a[3] - b[3]); // sort by height, then bitrate
+    data = [headers, ...data]
+    let csv = data.map(fields => fields.join(separator)).join("\n")
+    return csv
+  }
+
   private async routes() {
     this.fastify.get('/', async (request, reply) => {
       reply
@@ -159,47 +191,34 @@ export class AutoabrService {
     this.fastify.get('/autoabr/result/:output/:model', async (request, reply) => {
       const output = request.params.output;
       const model = request.params.model;
-      const csv = request.query.csv;
+      const format = request.query.format;
       const autoabrWorker = this.getAutoabrWorker();
       try {
         const result = await autoabrWorker.getJobOutput(output, model);
-        if (csv != undefined && model) {
-          let data = `output,model,resolution,bitrate,vmaf score\n`
-          for (const r in result[output][model]) {
-            const res = r.split('_')[0]
-            const bitrate = r.split('_')[1]
-            const score = result[output][model][r]
-            data += `${output},${model},${res},${bitrate},${score}\n`
-          }
+        let ext = format == "tsv" ? format : "csv"
+        if (format != undefined && model) {
+          let data = this.formatResults(result, output, model, format)
           reply
           .code(200)
           .header('Content-Type', 'text/csv; charset=utf-8')
+          .header('Content-Disposition', `attachment; filename=${output}-${model}.${ext}`)
           .send(data);
-        } else if (csv != undefined && !model) {
-          let data = `output,model,resolution,bitrate,vmaf score\n`
-          for (const m in result[output]) {
-            if (Object.keys(result[output][m]).length) {
-              for (const r in result[output][m]) {
-                const res = r.split('_')[0]
-                const bitrate = r.split('_')[1]
-                const score = result[output][m][r]
-                data += `${output},${m},${res},${bitrate},${score}\n`
-              }
-            }
-          }
+        } else if (format != undefined && !model) {
+          let data = this.formatResults(result, output, undefined, format)
           reply
           .code(200)
           .header('Content-Type', 'text/csv; charset=utf-8')
+          .header('Content-Disposition', `attachment; filename=${output}.${ext}`)
           .send(data);
         } else {
           reply
-            .code(200)
-            .header('Content-Type', 'application/json; charset=utf-8')
-            .send({
-              id: autoabrWorker.id,
-              status: autoabrWorker.status,
-              result: result,
-            });
+          .code(200)
+          .header('Content-Type', 'application/json; charset=utf-8')
+          .send({
+            id: autoabrWorker.id,
+            status: autoabrWorker.status,
+            result: result,
+          });
         }
       } catch (error) {
         reply
