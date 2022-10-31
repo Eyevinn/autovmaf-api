@@ -65,11 +65,11 @@ To start a new Autoabr job send a `POST` request to the `/autoabr` endpoint with
 
 ```json
 {
-  "encodingSettingsUrl": "s3://vmaf-files/encoding-profile-h265.json",
-  "pipelineUrl": "s3://vmaf-files/pipeline.json",
+  "encodingSettingsUrl": "s3://bucket-name/encoding-profile.json",
+  "pipelineUrl": "s3://bucket-name/pipeline.json",
   "job": {
     "name": "job-name",
-    "reference": "s3://vmaf-files/tv2-vod-references/reference.mov",
+    "reference": "s3://bucket-name/reference.mov",
     "models": ["UHD"],
     "bitrates": [10000000, 12800000],
     "resolutions": [
