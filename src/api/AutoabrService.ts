@@ -11,7 +11,9 @@ export class AutoabrService {
 
   constructor() {
     this.fastify = Fastify({
-      logger: true,
+      logger: {
+        prettyPrint: true
+      },
       ignoreTrailingSlash: true,
     });
   }
