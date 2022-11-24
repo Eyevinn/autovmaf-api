@@ -17,10 +17,10 @@ export class AutoABR {
   private jobData: any;
   private encodingProfileData: any;
   private pipelineData: any;
-  private redis: RedisConnector;
+  private redis: any;
 
   constructor() {
-    this.redis = new RedisConnector();
+    this.redis = RedisConnector.getInstance();
     this.instanceId = nanoid();
     this.jobStatus = State.INACTIVE;
     this.jobData = {};
