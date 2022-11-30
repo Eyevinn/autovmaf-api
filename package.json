@@ -7,6 +7,7 @@
     "build": "tsc --project ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node build/index.js",
+    "postversion": "git push && git push --tags",
     "dev": "nodemon index.ts"
   },
   "author": "Eyevinn Technology <work@eyevinn.se>",
