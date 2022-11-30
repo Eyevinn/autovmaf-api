@@ -1,6 +1,6 @@
 {
   "name": "autoabr-api",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "API to orchestrate autoabr jobs in AWS",
   "main": "index.ts",
   "scripts": {
