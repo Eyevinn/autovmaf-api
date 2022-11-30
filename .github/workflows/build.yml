@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: eu-north-1
-  ECR_REPOSITORY: autoabr-api
+  ECR_REPOSITORY: autovmaf-api
 
 defaults:
   run:
