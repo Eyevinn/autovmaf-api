@@ -1,0 +1,17 @@
+CREATE EXTERNAL TABLE abr_jobs (
+    id int,
+    name varchar,
+    starttime time,
+    endtime time,
+    lastUpdate time,
+    status varchar/enum,
+    progress int%,
+    jobId varchar,
+    updateTime time,
+    payload varchar/jsonObject,
+    result varchar/jsonObject
+) TBLPROPERTIES (
+    COLUMN_MAPPING = 'id,age;name,name;age,id',
+    TABLE_MAPPING = 'foo_',
+    format = 'csv'
+);
